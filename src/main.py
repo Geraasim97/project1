@@ -44,5 +44,4 @@ def main(n):
 
             print(f"{date}  {description}\n{from_}{to}\n{amount} {code}\n")
             break
-
 main(5)
