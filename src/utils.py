@@ -1,74 +1,73 @@
-import json
-import datetime
-
-from src.classes import Operation
-from src.masks import check_wallet
-def load_file(file_url):
-    '''
-    Функция получает расположение JSON-файла
-    с банковскими операциями и
-    преобразует его в python-словарь
-    :param file_url: расположение JSON-файла
-    :return: словарь с банковскими операциями
-    '''
-    with open(file_url, "r", encoding="UTF-8") as f:
-        operations = json.load(f)
-        return operations
+from datetime import datetime
 
 
-def make_operations(operation:list):
+def last_five(all_operations):
     '''
-    Функция создаёт список экземпляров класса Operations,
-    который включает в себя всю информацию о банковской операции
-    :param operations: список с банковскими операциями
+    Функция возврвщает даты 5 выполненных последних операций
+    :param all_operations: необработанный файл с всеми операциями
     '''
 
-    operations_list = []
+    # Исправляем файл с всеми операциями, оставляем только те операции, где есть дата
+    execution_oper = []
+    for dict in all_operations:
+        for k, v in dict.items():
+            if v == "EXECUTED":
+                execution_oper.append(dict)
 
-    for inf in operation:
-        try:
-            operation_id = inf["id"]
-            state = inf["state"]
-            date_full = datetime.datetime.strptime(inf["date"], "%Y-%m-%dT%H:%M:%S.%f")
-            date = datetime.datetime.strftime(date_full, "%d.%m.%Y")
-            description = inf["description"]
-            sender = check_wallet("from")
-            receiver = check_wallet("to")
-            amount = inf["operationAmount"]["amount"]
-            currency = inf["operationAmount"]["currency"]["name"]
-            operation = Operation(operation_id, state, date, description, sender, receiver, amount, currency)
-            operations_list.append(operation)
-        except:
-            continue
-    return operations_list
+    # Создаем список, где будут находиться только даты последных 5 операций
+    date_list = []
+    for el in execution_oper:
+        date_list.append(el["date"])
+
+    date_list.sort(reverse=True)
+
+    return date_list[:5]
 
 
-def get_all_operations(operations: list):
-    '''
-    Функция выводит все сортированные по дате операции
-    :param operations: список экземпляров класса Operations
-    :return: данные со всеми отсортированными операциями
-    '''
-    information = ''
-    operations.sort(key=lambda x: datetime.datetime.strptime(x.get_date(), "%d.%m.%Y"), reverse=True)
-    for operation in operations:
-        information += operation.get_information()
-    return information
+def correct_date(date):
+    """
+    Функция преобразует строку с датой в нужный формат
+    :param date: входит тип данных строка с датой
+    """
+    date = datetime.strptime("".join(date[:10]), "%Y-%m-%d")
+    return "{}.{}.{}".format(date.day, date.month, date.year)
 
 
-def get_executed_five(operations: list):
-    '''
-    Функция выводит последние 5 выполенных операций
-    :param operations: список экземпляров класса Operations
-    :return: данные с пятью последними успешными операциями
-    '''
-    operations_counter = 0
-    information = ''
-    operations.sort(key=lambda x: datetime.datetime.strptime(x.get_date(), "%d.%m.%Y"), reverse=True)
-    for operation in operations:
-        if operation.state == "EXECUTED":
-            operations_counter += 1
-            information += operation.get_information()
-        if operations_counter == 5:
-            break
-    return information
+def correct_card(from_):
+    """
+    Функция преобразует входящую строку с номером карты в нужный формат
+    """
+    #  Тип источника (MAESTRO, VISA, и т.п.) складываем в отдельный список, который потом склеим методом join в строку
+    from_type = []
+    for i in from_:
+        if i.isalpha() or i == " ":
+            from_type.append(i)
+
+    card_number = from_.split()[-1]
+
+    #Получаем номер карты с * вместо цифр
+    private_number = card_number[:-10] + len(card_number[-10:-4]) * '*' + card_number[-4:]
+
+    # Определяем, подгруппы по сколько цифр будет разделяться номер карты
+    n = 4
+
+    # Возвращаем склееную строку из типа источника и номера карты, разделенного на подгруппы и
+    return "".join(from_type) + " ".join([private_number[i:i + n] for i in range(0, len(private_number), n)])
+
+
+def correct_count(to):
+    """
+    Функция преобразует входящую строку с номером счета получателя в нужный формат
+    """
+    to_type = []
+
+    for i in to:
+
+        if i.isalpha() or i == " ":
+            to_type.append(i)
+
+    to_number = to.split()[-1]
+
+    private_number = len(to_number[-6:-4]) * '*' + to_number[-4:]
+
+    return "".join(to_type) + private_number

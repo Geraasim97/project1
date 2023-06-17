@@ -1,69 +1,19 @@
-import src.classes
-from src.utils import *
+from main import all_operations
 
-FILE_URL_GENERAL = "../json_file/operation.json"
-FILE_URL_TEST = "../json_file/test"
+from func.func import last_five, correct_date, correct_count, correct_card
 
 
-def test_load_file():
-    assert type(load_file(FILE_URL_GENERAL)) is list
-    assert type(load_file(FILE_URL_TEST)) is list
+def test_last_five():
+    assert last_five(all_operations) == ['2019-12-08T22:46:21.935582', '2019-12-07T06:17:14.634890', '2019-11-19T09:22:25.899614', '2019-11-13T17:38:04.800051', '2019-11-05T12:04:13.781725']
 
 
-def test_make_operations():
-    first_list = load_file(FILE_URL_GENERAL)
-    second_list = load_file(FILE_URL_TEST)
-
-    for object in make_operations(first_list):
-        assert type(object) is src.classes.Operation
-
-    for object in make_operations(second_list):
-        assert type(object) is src.classes.Operation
-
-    assert make_operations(second_list)[0].get_id() == 441945886
-    assert make_operations(second_list)[0].get_date() == "26.08.2019"
-    assert make_operations(second_list)[0].get_state() == "EXECUTED"
-    assert make_operations(second_list)[0].get_information() == "26.08.2019 Перевод организации\n" \
-                                                                "Maestro 1596 83** **** 5199 -> Счет **9589\n" \
-                                                                "31957.58 руб.\n\n"
-    assert str(make_operations(second_list)[0]) == "операция 441945886"
+def test_correct_date():
+    assert correct_date('2018-10-14T08:21:33.419441') == '14.10.2018'
 
 
-def test_get_all_operations():
-    operations_list = load_file(FILE_URL_TEST)
-    objects = make_operations(operations_list)
-    assert get_all_operations(objects) == "26.08.2019 Перевод организации\n" \
-                                         "Maestro 1596 83** **** 5199 -> Счет **9589\n" \
-                                         "31957.58 руб.\n\n" \
-                                         "03.07.2019 Перевод организации\n" \
-                                         "MasterCard 7158 30** **** 6758 -> Счет **5560\n" \
-                                         "8221.37 USD\n\n" \
-                                         "04.04.2019 Перевод со счета на счет\n" \
-                                         "Счет **8542 -> Счет **4188\n" \
-                                         "79114.93 USD\n\n" \
-                                         "23.03.2019 Перевод со счета на счет\n" \
-                                         "Счет **4719 -> Счет **1160\n" \
-                                         "43318.34 руб.\n\n" \
-                                         "23.03.2018 Открытие вклада\n" \
-                                         "Неизвестно -> Счет **2431\n" \
-                                         "48223.05 руб.\n\n"
+def test_correct_count():
+    assert correct_count('Счет 90424923579946435907') == 'Счет **5907'
 
 
-def test_get_executed_five():
-    operations_list = load_file(FILE_URL_TEST)
-    objects = make_operations(operations_list)
-    assert get_executed_five(objects) == "26.08.2019 Перевод организации\n" \
-                                         "Maestro 1596 83** **** 5199 -> Счет **9589\n" \
-                                         "31957.58 руб.\n\n" \
-                                         "03.07.2019 Перевод организации\n" \
-                                         "MasterCard 7158 30** **** 6758 -> Счет **5560\n" \
-                                         "8221.37 USD\n\n" \
-                                         "04.04.2019 Перевод со счета на счет\n" \
-                                         "Счет **8542 -> Счет **4188\n" \
-                                         "79114.93 USD\n\n" \
-                                         "23.03.2019 Перевод со счета на счет\n" \
-                                         "Счет **4719 -> Счет **1160\n" \
-                                         "43318.34 руб.\n\n" \
-                                         "23.03.2018 Открытие вклада\n" \
-                                         "Неизвестно -> Счет **2431\n" \
-                                         "48223.05 руб.\n\n"
+def test_correct_card():
+    assert correct_card('Maestro 3928549031574026') == 'Maestro 3928 54** **** 4026'
