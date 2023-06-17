@@ -6,9 +6,10 @@ with open("operation.json", 'rt', encoding='utf-8') as operations:
     all_operations = json.load(operations)
 
 last_five_date = last_five(all_operations)
-print(last_five_date)
+
+def main(n):
 # Запускаем цикл перебора по последним 5 датам
-for date in last_five(all_operations):
+  for date in last_five(all_operations):
 
     # Запускаем цикл перебора списка с всеми операциями
     for dict in all_operations:
@@ -42,5 +43,8 @@ for date in last_five(all_operations):
                 code = dict["operationAmount"]["currency"]["code"]
 
             print(f"{date}  {description}\n{from_}{to}\n{amount} {code}\n")
-
             break
+
+
+
+main(5)
