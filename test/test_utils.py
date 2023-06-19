@@ -1,4 +1,4 @@
-from main import all_operations
+from src.main import all_operations
 
 from src.utils import last_five, correct_date, correct_count, correct_card
 
