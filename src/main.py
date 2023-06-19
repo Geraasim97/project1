@@ -6,6 +6,7 @@ with open("operations.json", 'rt', encoding='utf-8') as operations:
     all_operations = json.load(operations)
 
 last_five_date = last_five(all_operations)
+>>>> main
 def main(n):
 # Запускаем цикл перебора по последним 5 датам
   for date in last_five(all_operations):
