@@ -1,6 +1,6 @@
-from main import all_operations
+from src.main import all_operations
 
-from func.func import last_five, correct_date, correct_count, correct_card
+from src.utils import last_five, correct_date, correct_count, correct_card
 
 
 def test_last_five():

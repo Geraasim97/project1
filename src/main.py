@@ -1,7 +1,7 @@
 import json
 from src.utils import last_five, correct_date, correct_card, correct_count
 
-with open("operation.json", 'rt', encoding='utf-8') as operations:
+with open("operations.json", 'rt', encoding='utf-8') as operations:
     # Преобразуем содержимое файла в список со операциями
     all_operations = json.load(operations)
 
